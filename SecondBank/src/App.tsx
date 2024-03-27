@@ -6,6 +6,7 @@ import { Home } from './_root/pages'
 import SignupForm from './_auth/forms/SignupForm'
 import AuthLayout from './_auth/forms/AuthLayout'
 import RootLayout from './_root/RootLayout'
+import React from 'react'
 
 const App = () => {
   return (
