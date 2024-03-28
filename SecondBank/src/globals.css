@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply bg-teal-100 text-slate-900 min-h-screen font-sans;
+    @apply bg-white text-slate-900 min-h-screen font-sans;
   }
 }
 
@@ -71,7 +71,11 @@
   .tiny-medium {
     @apply text-[10px] font-medium leading-[140%];
   }
-
+  .secondary-text{
+    font-size: 10px;
+    font-weight: 100
+    
+  }
   /* UTILITIES */
   .invert-white {
     @apply invert brightness-0 transition;
@@ -250,7 +254,9 @@
   /* SHADCN COMPONENTS */
   /* Form */
   .shad-form_label {
-    @apply text-white !important;
+    @apply text-base text-black !important;
+
+
   }
 
   .shad-form_message {
@@ -258,20 +264,21 @@
   }
 
   .shad-input {
-    @apply h-12 bg-dark-4 border-none placeholder:text-light-4 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+    @apply appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm border-b-gray-700 !important;
+    border-radius: 5px;
   }
 
   .shad-textarea {
-    @apply h-36 bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+    @apply h-36 bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-3 !important;
   }
 
   /* Button */
   .shad-button_primary {
-    @apply bg-primary-500 hover:bg-primary-500 text-light-1 flex gap-2 !important;
+    @apply bg-indigo-700 hover:bg-indigo-400 text-slate-900 flex gap-2 w-28 !important;
   }
 
   .shad-button_dark_4 {
-    @apply h-12 bg-dark-4 px-5 text-light-1 flex gap-2 !important;
+    @apply h-12 bg-dark-4 px-5 text-slate-900 flex gap-2 !important;
   }
 
   .shad-button_ghost {
