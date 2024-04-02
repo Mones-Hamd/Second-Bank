@@ -1,17 +1,31 @@
-import React from 'react'
-import { Link } from "react-router-dom"
+import React, { useState } from 'react'
+import { Link, useNavigate } from "react-router-dom"
 import { Form } from "../../components/ui/form"
 import { Button } from "../../components/ui/button"
 import { Label } from "../../components/ui/label"
 import { Input } from "../../components/ui/input"
 import { validateEmail, validatePassword } from '../../lib/validation'
 import { useFormState, useValidation } from '../../hooks/useForm';
+import { useCreateAccountMutation, useSignInAccountMutation } from '@/lib/react-query/queriesAndMutations'
+import { useUserContext } from '@/context/AuthContext'
+import ErrorAlert from '@/components/ui/ErrorAlret'
+import Loading from '@/components/ui/Loading'
 
 const SignupForm = () => {
     const { formData, handleChange } = useFormState();
-    const { errors, debouncedValidateEmail, debouncedValidatePassword, validateConfirmPassword,setErrors } = useValidation();
+    const { errors, 
+      debouncedValidateEmail,
+      debouncedValidatePassword,
+      validateConfirmPassword, 
+      setErrors } = useValidation();
+    const [errorAlert, setErrorAlert] = useState<string>("");
+    const navigate = useNavigate();
+    const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+
+    const {mutateAsync:createAccount, isPending : isCreatingAccount} =useCreateAccountMutation();
+    const { mutateAsync: signInAccount, isPending : isSigningInUser } = useSignInAccountMutation();
   
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       const emailError = validateEmail(formData.email);
       const passwordError = validatePassword(formData.password);
@@ -23,15 +37,35 @@ const SignupForm = () => {
         password: passwordError,
         confirmPassword: confirmPasswordError
       });
-  
+      
       if (!emailError && !passwordError && !confirmPasswordError) {
         // Proceed with form submission
-        console.log('Form submitted successfully', formData);
+      try{
+            const newUser = await createAccount(formData);
+            const session = await signInAccount({
+              email: formData.email,
+              password: formData.password,
+            });
+      
+            if (!session) {       
+              navigate("/signin");
+              
+              return;
+            }
+      
+            const isLoggedIn = await checkAuthUser();
+      
+            if (isLoggedIn)  navigate("/");
+          } catch (err) {
+            setErrorAlert(err.message || "An error occurred")
+          }
+        }
+   
       }
-    };
   
     return (
       <div className="sm:w-420 flex-center max-w-md w-full space-y-2 flex-col mt-4">
+        {errorAlert && <ErrorAlert error={errorAlert}/>}
         <h3 className="md:h4-bold pt-5 sm:pt-12"> Join Second Bank community </h3>
         <div className="flex justify-center w-full">
           <Form onSubmit={handleSubmit}>
@@ -58,8 +92,8 @@ const SignupForm = () => {
                   handleChange(e);
                   debouncedValidateEmail(e.target.value);
                 }}
-                error={errors.email} // Pass the error prop for email input
-                success={!errors.email} // Pass the success prop based on email validation
+                error={errors.email} 
+                success={!errors.email} 
               />
             </div>
             <div className="mb-4">
@@ -74,8 +108,8 @@ const SignupForm = () => {
                   handleChange(e);
                   debouncedValidatePassword(e.target.value);
                 }}
-                error={errors.password} // Pass the error prop for password input
-                success={!errors.password} // Pass the success prop based on password validation
+                error={errors.password} 
+                success={!errors.password} 
               />
             </div>
             <div className="mb-4">
@@ -90,11 +124,11 @@ const SignupForm = () => {
                   handleChange(e);
                   validateConfirmPassword(e.target.value, formData.password);
                 }}
-                error={errors.confirmPassword} // Pass the error prop for confirm password input
-                success={!errors.confirmPassword} // Pass the success prop based on confirm password validation
+                error={errors.confirmPassword} 
+                success={!errors.confirmPassword} 
               />
             </div>
-            <Button type="submit">Sign Up</Button>
+            <Button type="submit">{isCreatingAccount || isSigningInUser || isUserLoading? <Loading /> : "Sign up"}</Button>
             <p className="mt-2 text-sm text-gray-600 secondary-text">
               Already have an account?
               <Link
