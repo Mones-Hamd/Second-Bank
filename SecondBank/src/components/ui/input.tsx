@@ -33,7 +33,7 @@ export const Input: React.FC<InputProps> = ({ id, error, success, ...rest }) => 
         {showPassword ? <RiEyeOffFill /> : <RiEyeFill />}
       </button>
     )}
-    {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+    {error && <p className="text-red text-[10px] mt-1">{error}</p>}
   </div>
   );
 };
